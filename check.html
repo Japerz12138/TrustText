@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Check Message</title>
+</head>
+<body>
+  <h2>Check if a message is Spam or Ham</h2>
+
+  <form action="/check" method="post">
+    <label for="sms">Enter message:</label><br>
+    <textarea name="sms" rows="5" cols="50" required></textarea><br><br>
+    <button type="submit">Check</button>
+  </form>
+
+  {% if result %}
+    <p><strong>Result:</strong> {{ result }}</p>
+  {% endif %}
+</body>
+</html>
