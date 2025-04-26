@@ -68,16 +68,18 @@ export default function Index() {
       <View style={styles.content}>
         <Text style={styles.title}>TrustText</Text>
         <Text style={styles.subtitle}>Enter the message you want to analyze</Text>
-      </View>
-      <Button
-        onPress = {cardTest}
-        title = "TEST the CARD"
-        accessibilityLabel = "Test the card button"
+        
+        <ResultCard
+          status={result.status}
+          message={result.message}
         />
-      <ResultCard
-        status={result.status}
-        message={result.message}
-      ></ResultCard>
+
+        <Button
+          onPress = {cardTest}
+          title = "TEST the CARD"
+          accessibilityLabel = "Test the card button"
+        />
+      </View>
     </SafeAreaView>
 
   );

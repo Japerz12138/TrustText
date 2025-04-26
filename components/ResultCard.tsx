@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet } from "react-native";
 import { LinearGradient } from 'expo-linear-gradient';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons'; //https://icons.expo.fyi/Index
 
 type ResultType = 'waiting' | 'safe' | 'sus' | 'dangerous';
 
