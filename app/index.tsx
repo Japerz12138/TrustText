@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, Text, StyleSheet, Button } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import ResultCard from '../components/ResultCard';
 
@@ -8,7 +8,7 @@ export default function Index() {
   const [text, setText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<{
-    status: 'waiting' | 'safe' | 'sus' | 'dangerous' ;
+    status: 'waiting' | 'safe' | 'sus' | 'dangerous';
     message: string;
   }>({
     status: 'waiting',
@@ -29,7 +29,7 @@ export default function Index() {
   //Test Code Ends, make sure delete in production
 
   const analyzingText = async () => {
-    if(!text.trim()) {
+    if (!text.trim()) {
       setResult({
         status: 'waiting',
         message: 'Please enter a message to analyze',
@@ -51,7 +51,7 @@ export default function Index() {
   };
 
   //This is the function to test the card, basically looping 4 different status
-  const cardTest = async() => {
+  const cardTest = async () => {
     const nextIndex = (testIndex + 1) % statusOrder.length;
     const nextStatus = statusOrder[nextIndex];
 
@@ -68,17 +68,33 @@ export default function Index() {
       <View style={styles.content}>
         <Text style={styles.title}>TrustText</Text>
         <Text style={styles.subtitle}>Enter the message you want to analyze</Text>
-        
+
+        <TextInput
+          style={styles.inputBox}
+          multiline
+          numberOfLines={4}
+          value={text}
+          onChangeText={setText}
+          placeholder="Paste your SMS message here..."
+          placeholderTextColor="#9CA3AF"
+        />
+
         <ResultCard
           status={result.status}
           message={result.message}
         />
 
-        <Button
-          onPress = {cardTest}
-          title = "TEST the CARD"
-          accessibilityLabel = "Test the card button"
-        />
+        <TouchableOpacity
+          style={styles.button}
+          onPress={cardTest}
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <ActivityIndicator color="white" />
+          ) : (
+            <Text style={styles.buttonText}>Check Message</Text>
+          )}
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
 
@@ -88,20 +104,43 @@ export default function Index() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F3F4F6',
+    backgroundColor: '#F3F4F6'
   },
   content: {
-    padding: 20,
+    padding: 20
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     color: '#111827',
-    marginBottom: 8,
+    marginBottom: 8
   },
   subtitle: {
     fontSize: 16,
     color: '#4B5563',
-    marginBottom: 20,
+    marginBottom: 20
   },
+  inputBox: {
+    backgroundColor: 'white',
+    borderRadius: 12,
+    padding: 16,
+    minHeight: 120,
+    textAlignVertical: 'top',
+    fontSize: 16,
+    borderWidth: 2,
+    borderColor: '#E5E7EB',
+    marginBottom: 16
+  },
+  button: {
+    backgroundColor: '#3B82F6',
+    borderRadius: 12,
+    padding: 16,
+    alignItems: 'center',
+    marginBottom: 16
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600'
+  }
 });
