@@ -1,8 +1,9 @@
+
 # Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
 
 # dependencies
 node_modules/
-
+api/venv
 # Expo
 .expo/
 dist/
@@ -31,8 +32,11 @@ yarn-error.*
 
 # local env files
 .env*.local
+.flaskenv
 
 # typescript
 *.tsbuildinfo
 
 app-example
+
+.vscode
