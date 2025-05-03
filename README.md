@@ -31,3 +31,12 @@ To learn more about developing your project with Expo, look at the following res
 - [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
 - [Video](https://www.youtube.com/watch?v=CzJQEstIiEI&ab_channel=JavaScriptMastery): The video I used to do get started
 
+## Python Setup
+1. Enter pythong env, install dependencies from PIP
+   
+   ```shell
+   cd api
+   venv\Scripts\activate
+   pip install -r requirements.txt
+   ```
+   

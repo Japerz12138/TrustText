@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import ResultCard from '../components/ResultCard';
@@ -29,6 +29,7 @@ export default function Index() {
   //Test Code Ends, make sure delete in production
 
   const analyzingText = async () => {
+
     if (!text.trim()) {
       setResult({
         status: 'waiting',
@@ -40,11 +41,24 @@ export default function Index() {
     setIsLoading(true);
     try {
       //TODO: Connect to backend here
+      console.log("Attempting to send data")
+      console.log("Using effect")
+      fetch(`http://localhost:5000/api/analyze?suspecttext=${text}`).then(
+        res => res.json()
+      ).then(
+        data => {
+          setResult({
+            status: data.status,
+            message: "Message Analyzed!"
+          }) 
+        }
+      );
     } catch (error) {
       setResult({
         status: 'dangerous',
         message: 'Error, Please try again',
       });
+      console.log(error)
     } finally {
       setIsLoading(false);
     }
@@ -86,7 +100,8 @@ export default function Index() {
 
         <TouchableOpacity
           style={styles.button}
-          onPress={cardTest}
+          //onPress={cardTest}
+          onPress={analyzingText}
           disabled={isLoading}
         >
           {isLoading ? (
