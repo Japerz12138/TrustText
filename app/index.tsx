@@ -37,23 +37,31 @@ export default function Index() {
       });
       return;
     }
-
+  
     setIsLoading(true);
     try {
-      //TODO: Connect to backend here
-      console.log("Attempting to send data")
-      console.log("Using effect")
-      fetch(`http://localhost:5000/api/analyze?suspecttext=${text}`).then(
-        res => res.json()
-      ).then(
-        data => {
-          setResult({
-            status: data.status,
-            message: "Message Analyzed!"
-          }) 
-        }
-      );
+      const response = await fetch('http://localhost:5000/analyze', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ message: text }),
+      });
+  
+      const data = await response.json();
+  
+      if (data.error) {
+        throw new Error(data.error);
+      }
+  
+      const { status, sus_score, explanation } = data;
+  
+      setResult({
+        status: status,
+        message: `Risk Score: ${sus_score}%\n${explanation.join('\n')}`,
+      });
     } catch (error) {
+      //console.error(error);
       setResult({
         status: 'dangerous',
         message: 'Error, Please try again',
@@ -91,6 +99,7 @@ export default function Index() {
           onChangeText={setText}
           placeholder="Paste your SMS message here..."
           placeholderTextColor="#9CA3AF"
+          clearButtonMode="always"
         />
 
         <ResultCard
@@ -100,7 +109,6 @@ export default function Index() {
 
         <TouchableOpacity
           style={styles.button}
-          //onPress={cardTest}
           onPress={analyzingText}
           disabled={isLoading}
         >
