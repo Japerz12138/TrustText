@@ -26,19 +26,17 @@ def preprocess(text):
     tokens = [t for t in tokens if t not in stop_words]
     return ' '.join(tokens)
 
-def analyze_keywords(text, base_score):
+def analyze_keywords(text):
     sus_keywords = ['free', 'win', 'winner', 'prize', 'urgent', 'claim', 'congratulations', 'guaranteed', 'immediately']
     explanation = []
-    score = base_score
 
     for word in sus_keywords:
         if word in text.lower():
             explanation.append(f"Deteced suspicious keyword: '{word}'")
-            score += 5
 
     if not explanation:
         explanation.append("No strong suspicious keywords detected")
-    return explanation, score
+    return explanation
         
 @app.route('/analyze', methods=['POST'])
 def analyze():
@@ -60,7 +58,7 @@ def analyze():
 
     #This part we keep it on to show as a demo during the presentation, DO NOT REMOVE!
     print('Score before sus word: ', final_sus_score)
-    explanation, final_sus_score = analyze_keywords(message, final_sus_score)
+    explanation = analyze_keywords(message)
     print('Score After sus word: ', final_sus_score)
 
     if final_sus_score >= 70:

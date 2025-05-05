@@ -35,6 +35,20 @@ export default function ResultCard ({status, message}: ResultCardProps){
                 return 'shield-outline';
         }
     };
+
+    const labelPicker = () => {
+        switch (status){
+            case 'safe':
+                return 'SAFE';
+            case 'sus':
+                return 'SUSPICIOUS';
+            case 'dangerous':
+                return 'DANGEROUS';
+            default:
+                return 'STANDBY';
+        }
+    };
+
     return (
         <LinearGradient
             colors={colorPicker()} //It... works fine, so leave it till I find a better way doing this
@@ -42,6 +56,9 @@ export default function ResultCard ({status, message}: ResultCardProps){
             start={{x:0, y:0}}
             end={{x:1, y:1}}
             >
+                <Text style={styles.backgroundLabel}>
+                    {labelPicker()}
+                </Text>
                 <View style={styles.content}>
                     <MaterialCommunityIcons
                         name={iconPicker()}
@@ -78,4 +95,13 @@ const styles = StyleSheet.create({
       flex: 1,
       fontWeight: '500',
     },
+    backgroundLabel: {
+        position: 'absolute',
+        right: 12,
+        bottom: 12,
+        fontSize: 48,
+        fontWeight: '900',
+        color: 'rgba(255, 255, 255, 0.1)',
+        zIndex: 1,
+    }
   });
