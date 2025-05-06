@@ -116,7 +116,7 @@ export default function Index() {
 
         {text.trim() !== '' && (
           <TouchableOpacity
-            style={styles.button}
+            style={styles.subButton}
             onPress={() => setText('')}
         >
             <Text style={styles.buttonText}>Clear</Text>
@@ -128,7 +128,7 @@ export default function Index() {
         <View style={styles.buttonContainer}>
 
           <TouchableOpacity
-            style={styles.button}
+            style={styles.mainButton}
             onPress={analyzingText}
             disabled={isLoading}
           >
@@ -175,15 +175,22 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 12,
     padding: 16,
-    minHeight: 120,
+    minHeight: 200,
     textAlignVertical: 'top',
     fontSize: 16,
     borderWidth: 2,
     borderColor: '#E5E7EB',
     marginBottom: 16
   },
-  button: {
+  mainButton: {
     backgroundColor: '#3B82F6',
+    borderRadius: 12,
+    padding: 16,
+    alignItems: 'center',
+    marginBottom: 16
+  },
+  subButton: {
+    backgroundColor: '#99A0AC',
     borderRadius: 12,
     padding: 16,
     alignItems: 'center',

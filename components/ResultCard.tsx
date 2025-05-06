@@ -1,6 +1,9 @@
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Animated, TouchableWithoutFeedback } from "react-native";
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialCommunityIcons } from '@expo/vector-icons'; //https://icons.expo.fyi/Index
+import { useEffect, useRef, useState } from "react";
+
+
 
 type ResultType = 'waiting' | 'safe' | 'sus' | 'dangerous';
 
@@ -11,6 +14,12 @@ interface ResultCardProps {
 }
 
 export default function ResultCard({ status, score, message }: ResultCardProps) {
+    const [isExpanded, setIsExpanded] = useState(false);
+    const [contentHeight, setContentHeight] = useState(0);
+    const animatedHeight = useRef(new Animated.Value(100)).current;
+
+
+
     const colorPicker = () => {
         switch (status) {
             case 'safe':
@@ -50,31 +59,51 @@ export default function ResultCard({ status, score, message }: ResultCardProps) 
         }
     };
 
+    const toggleExpand = () => {
+        Animated.timing(animatedHeight, {
+            toValue: isExpanded ? 100 : contentHeight + 40,
+            duration: 400,
+            useNativeDriver: false,
+        }).start();
+        setIsExpanded(!isExpanded);
+    };
+
     return (
-        <LinearGradient
-            colors={colorPicker()} //It... works fine, so leave it till I find a better way doing this
-            style={styles.card}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-        >
-            <Text style={styles.backgroundLabel}>
-                {labelPicker()}
-            </Text>
-            <View style={styles.content}>
-                <MaterialCommunityIcons
-                    name={iconPicker()}
-                    size={32}
-                    color='white'
-                    style={styles.icon} />
-                <View style={styles.textContent}>
-                    <Text style={styles.score}>{score}</Text>
-                    <View style={styles.messageContainer}>
-                        <View style={styles.line} />
-                        <Text style={styles.message}>{message}</Text>
+        <TouchableWithoutFeedback onPress={toggleExpand}>
+            <Animated.View style={[styles.animatedCard, { height: animatedHeight }]}>
+                <LinearGradient
+                    colors={colorPicker()} //It... works fine, so leave it till I find a better way doing this
+                    style={styles.card}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                >
+                    <View
+                        onLayout={(event) => {
+                            const { height } = event.nativeEvent.layout;
+                            setContentHeight(height);
+                        }}
+                    >
+                        <Text style={styles.backgroundLabel}>
+                            {labelPicker()}
+                        </Text>
+                        <View style={styles.content}>
+                            <MaterialCommunityIcons
+                                name={iconPicker()}
+                                size={32}
+                                color='white'
+                                style={styles.icon} />
+                            <View style={styles.textContent}>
+                                <Text style={styles.score}>{score}</Text>
+                                <View style={styles.messageContainer}>
+                                    <View style={styles.line} />
+                                    <Text style={styles.message}>{message}</Text>
+                                </View>
+                            </View>
+                        </View>
                     </View>
-                </View>
-            </View>
-        </LinearGradient>
+                </LinearGradient>
+            </Animated.View >
+        </TouchableWithoutFeedback>
     );
 }
 
@@ -128,10 +157,15 @@ const styles = StyleSheet.create({
     backgroundLabel: {
         position: 'absolute',
         right: 12,
-        bottom: 12,
+        bottom: -11,
         fontSize: 48,
         fontWeight: '900',
         color: 'rgba(255, 255, 255, 0.1)',
         zIndex: 1,
+    },
+    animatedCard: {
+        overflow: 'hidden',
+        borderRadius: 12,
+        marginVertical: 16,
     }
 });
