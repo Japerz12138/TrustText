@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { useEffect, useState, useLayoutEffect } from 'react';
+import { View, ScrollView, Text, TextInput, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import ResultCard from '../components/ResultCard';
+import { useNavigation } from '@react-navigation/native';
 
 
 export default function Index() {
@@ -16,6 +17,16 @@ export default function Index() {
     score: '',
     message: 'Enter a message from a stranger to check for potential fraud!',
   });
+
+  //This part is hidding the navigation bar
+  const navigation = useNavigation();
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTitle: '',
+      headerShown: false,
+    });
+  }, [navigation]);
 
   //Test Code starts
   const [testIndex, setTestIndex] = useState(0);
@@ -40,7 +51,7 @@ export default function Index() {
       });
       return;
     }
-  
+
     setIsLoading(true);
     try {
       const response = await fetch('http://localhost:5000/analyze', {
@@ -50,18 +61,27 @@ export default function Index() {
         },
         body: JSON.stringify({ message: text }),
       });
-  
+
       const data = await response.json();
-  
+
       if (data.error) {
         throw new Error(data.error);
       }
-  
+
       const { status, sus_score, explanation } = data;
-  
+
+      let summary = '';
+      if (sus_score >= 80) {
+        summary = 'This message looks dangerous!';
+      } else if (sus_score >= 50) {
+        summary = 'This message could be suspicious!';
+      } else {
+        summary = 'Looks safe!';
+      }
+
       setResult({
         status: status,
-        score: `Risk Score: ${sus_score}%`,
+        score: summary,
         message: `${explanation.join('\n')}`,
       });
     } catch (error) {
@@ -77,6 +97,16 @@ export default function Index() {
     }
   };
 
+  const resetState = () => {
+    setText('');
+    setResult({
+      status: 'waiting',
+      score: '',
+      message: 'Please enter a message to analyze',
+    });
+    return;
+  }
+
   //This is the function to test the card, basically looping 4 different status
   // const cardTest = async () => {
   //   const nextIndex = (testIndex + 1) % statusOrder.length;
@@ -91,57 +121,61 @@ export default function Index() {
   // }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.content}>
-        <Text style={styles.title}>TrustText</Text>
-        <Text style={styles.subtitle}>Enter the message from a stranger to detect if it's a scam.</Text>
+    <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+      <SafeAreaView style={styles.container}>
+        <View style={styles.content}>
+          <View style={styles.headerContainer}>
+            <Text style={styles.title}>TrustText</Text>
+            <Text style={styles.titleHighlight}>SMS Frad Detector</Text>
+            <Text style={styles.subtitle}>Protect yourself from unknown scam messages</Text>
+          </View>
 
-        <TextInput
-          style={styles.inputBox}
-          multiline
-          numberOfLines={4}
-          value={text}
-          onChangeText={setText}
-          placeholder="Paste your SMS message here..."
-          placeholderTextColor="#9CA3AF"
-          clearButtonMode="always"
-        />
+          <TextInput
+            style={styles.inputBox}
+            multiline
+            numberOfLines={4}
+            value={text}
+            onChangeText={setText}
+            placeholder="Paste your SMS message here..."
+            placeholderTextColor="#9CA3AF"
+            clearButtonMode="always"
+          />
 
-        <ResultCard
-          status={result.status}
-          score={result.score}
-          message={result.message}
-        />
-
-
-        {text.trim() !== '' && (
-          <TouchableOpacity
-            style={styles.subButton}
-            onPress={() => setText('')}
-        >
-            <Text style={styles.buttonText}>Clear</Text>
-          </TouchableOpacity>
-        )}
+          <ResultCard
+            status={result.status}
+            score={result.score}
+            message={result.message}
+          />
 
 
-        <View style={styles.flexGrow} />
-        <View style={styles.buttonContainer}>
+          {text.trim() !== '' && (
+            <TouchableOpacity
+              style={styles.subButton}
+              onPress={resetState}
+            >
+              <Text style={styles.buttonText}>Clear</Text>
+            </TouchableOpacity>
+          )}
 
-          <TouchableOpacity
-            style={styles.mainButton}
-            onPress={analyzingText}
-            disabled={isLoading}
-          >
-            {isLoading ? (
-              <ActivityIndicator color="white" />
-            ) : (
-              <Text style={styles.buttonText}>Check Message</Text>
-            )}
-          </TouchableOpacity>
+
+          <View style={styles.flexGrow} />
+          <View style={styles.buttonContainer}>
+
+            <TouchableOpacity
+              style={styles.mainButton}
+              onPress={analyzingText}
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <ActivityIndicator color="white" />
+              ) : (
+                <Text style={styles.buttonText}>Check Message</Text>
+              )}
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
-    </SafeAreaView>
-
+      </SafeAreaView>
+    </ScrollView>
   );
 }
 
@@ -149,6 +183,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F3F4F6'
+  },
+  headerContainer: {
+    marginBottom: 24,
+    paddingHorizontal: 4,
   },
   content: {
     flex: 1,
@@ -161,15 +199,23 @@ const styles = StyleSheet.create({
     marginBottom: 20
   },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
+    fontSize: 36,
+    fontWeight: '800',
     color: '#111827',
-    marginBottom: 8
+    letterSpacing: -1,
+  },
+  titleHighlight: {
+    fontSize: 36,
+    fontWeight: '800',
+    color: '#3B82F6',
+    letterSpacing: -1,
+    marginBottom: 8,
   },
   subtitle: {
     fontSize: 16,
-    color: '#4B5563',
-    marginBottom: 20
+    color: '#6B7280',
+    marginTop: 4,
+    letterSpacing: 0.3,
   },
   inputBox: {
     backgroundColor: 'white',
