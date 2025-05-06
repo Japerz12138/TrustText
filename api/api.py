@@ -26,8 +26,13 @@ def preprocess(text):
     tokens = [t for t in tokens if t not in stop_words]
     return ' '.join(tokens)
 
+def load_sus_keywords(filepath):
+    with open(filepath, 'r') as f:
+        keywords = [line.strip() for line in f.readlines()]
+    return keywords
+
 def analyze_keywords(text):
-    sus_keywords = ['free', 'win', 'winner', 'prize', 'urgent', 'claim', 'congratulations', 'guaranteed', 'immediately']
+    sus_keywords = load_sus_keywords('model/sus_keywords.txt')
     explanation = []
 
     for word in sus_keywords:
@@ -57,21 +62,27 @@ def analyze():
     final_sus_score = int(sus_score * 100)
 
     #This part we keep it on to show as a demo during the presentation, DO NOT REMOVE!
-    print('Score before sus word: ', final_sus_score)
+    print('Sus Score: ', final_sus_score)
     explanation = analyze_keywords(message)
-    print('Score After sus word: ', final_sus_score)
 
-    if final_sus_score >= 70:
+    #Sus Score offset due to the scale of the model (10% offset)
+    if sus_score <= 80:
+        final_sus_score = final_sus_score - 10
+
+    if final_sus_score >= 80:
         status = 'dangerous'
-    elif final_sus_score >= 30:
+    elif final_sus_score >= 50:
         status = 'sus'
     else:
         status = 'safe'
 
+    print('Sus Score After adjust: ', final_sus_score)
+
+
     return jsonify({
         'status': status,
         'sus_score': final_sus_score,
-        'explanation': explanation
+        'explanation': explanation,
     })
 
 if __name__ == '__main__':

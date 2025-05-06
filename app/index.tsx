@@ -9,10 +9,12 @@ export default function Index() {
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<{
     status: 'waiting' | 'safe' | 'sus' | 'dangerous';
+    score: string;
     message: string;
   }>({
     status: 'waiting',
-    message: 'Enter a message to check for potential fraud!',
+    score: '',
+    message: 'Enter a message from a stranger to check for potential fraud!',
   });
 
   //Test Code starts
@@ -33,6 +35,7 @@ export default function Index() {
     if (!text.trim()) {
       setResult({
         status: 'waiting',
+        score: '',
         message: 'Please enter a message to analyze',
       });
       return;
@@ -58,12 +61,14 @@ export default function Index() {
   
       setResult({
         status: status,
-        message: `Risk Score: ${sus_score}%\n${explanation.join('\n')}`,
+        score: `Risk Score: ${sus_score}%`,
+        message: `${explanation.join('\n')}`,
       });
     } catch (error) {
       //console.error(error);
       setResult({
         status: 'dangerous',
+        score: '',
         message: 'Error, Please try again',
       });
       console.log(error)
@@ -73,23 +78,23 @@ export default function Index() {
   };
 
   //This is the function to test the card, basically looping 4 different status
-  const cardTest = async () => {
-    const nextIndex = (testIndex + 1) % statusOrder.length;
-    const nextStatus = statusOrder[nextIndex];
+  // const cardTest = async () => {
+  //   const nextIndex = (testIndex + 1) % statusOrder.length;
+  //   const nextStatus = statusOrder[nextIndex];
 
-    setTestIndex(nextIndex);
+  //   setTestIndex(nextIndex);
 
-    setResult({
-      status: nextStatus,
-      message: messageOrder[nextStatus]
-    });
-  }
+  //   setResult({
+  //     status: nextStatus,
+  //     message: messageOrder[nextStatus]
+  //   });
+  // }
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
         <Text style={styles.title}>TrustText</Text>
-        <Text style={styles.subtitle}>Enter the message you want to analyze</Text>
+        <Text style={styles.subtitle}>Enter the message from a stranger to detect if it's a scam.</Text>
 
         <TextInput
           style={styles.inputBox}
@@ -104,6 +109,7 @@ export default function Index() {
 
         <ResultCard
           status={result.status}
+          score={result.score}
           message={result.message}
         />
 
