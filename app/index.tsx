@@ -113,17 +113,32 @@ export default function Index() {
           message={result.message}
         />
 
-        <TouchableOpacity
-          style={styles.button}
-          onPress={analyzingText}
-          disabled={isLoading}
+
+        {text.trim() !== '' && (
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => setText('')}
         >
-          {isLoading ? (
-            <ActivityIndicator color="white" />
-          ) : (
-            <Text style={styles.buttonText}>Check Message</Text>
-          )}
-        </TouchableOpacity>
+            <Text style={styles.buttonText}>Clear</Text>
+          </TouchableOpacity>
+        )}
+
+
+        <View style={styles.flexGrow} />
+        <View style={styles.buttonContainer}>
+
+          <TouchableOpacity
+            style={styles.button}
+            onPress={analyzingText}
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <ActivityIndicator color="white" />
+            ) : (
+              <Text style={styles.buttonText}>Check Message</Text>
+            )}
+          </TouchableOpacity>
+        </View>
       </View>
     </SafeAreaView>
 
@@ -136,7 +151,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#F3F4F6'
   },
   content: {
+    flex: 1,
     padding: 20
+  },
+  flexGrow: {
+    flex: 1
+  },
+  buttonContainer: {
+    marginBottom: 20
   },
   title: {
     fontSize: 24,
