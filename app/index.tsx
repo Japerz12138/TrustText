@@ -2,12 +2,15 @@ import { useEffect, useState, useLayoutEffect } from 'react';
 import { View, ScrollView, Text, TextInput, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import ResultCard from '../components/ResultCard';
+import InfoModal from '../components/InfoModal';
 import { useNavigation } from '@react-navigation/native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 
 export default function Index() {
   const [text, setText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [showInfoModal, setShowInfoModal] = useState(false);
   const [result, setResult] = useState<{
     status: 'waiting' | 'safe' | 'sus' | 'dangerous';
     score: string;
@@ -71,10 +74,12 @@ export default function Index() {
       const { status, sus_score, explanation } = data;
 
       let summary = '';
+      let warning = '';
       if (sus_score >= 80) {
         summary = 'This message looks dangerous!';
       } else if (sus_score >= 50) {
-        summary = 'This message could be suspicious!';
+        summary = 'This message looks suspicious!';
+        warning = 'Please be cautious and verify the information.\n';
       } else {
         summary = 'Looks safe!';
       }
@@ -82,7 +87,7 @@ export default function Index() {
       setResult({
         status: status,
         score: summary,
-        message: `${explanation.join('\n')}`,
+        message: `${warning}${explanation.join('\n')}`,
       });
     } catch (error) {
       //console.error(error);
@@ -125,10 +130,26 @@ export default function Index() {
       <SafeAreaView style={styles.container}>
         <View style={styles.content}>
           <View style={styles.headerContainer}>
-            <Text style={styles.title}>TrustText</Text>
-            <Text style={styles.titleHighlight}>SMS Frad Detector</Text>
-            <Text style={styles.subtitle}>Protect yourself from unknown scam messages</Text>
+            <View style={styles.headerTop}>
+              <View>
+                <Text style={styles.title}>TrustText</Text>
+                <Text style={styles.titleHighlight}>SMS Frad Detector</Text>
+                <Text style={styles.subtitle}>Protect yourself from unknown scam messages</Text>
+              </View>
+              <TouchableOpacity
+                onPress={() => setShowInfoModal(true)}
+                style={styles.infoButton}
+              >
+                <MaterialCommunityIcons name="help-circle" size={28} color="#3B82F6" />
+              </TouchableOpacity>
+            </View>
           </View>
+
+          <InfoModal
+            isVisible={showInfoModal}
+            onClose={() => setShowInfoModal(false)}
+          />
+
 
           <TextInput
             style={styles.inputBox}
@@ -187,6 +208,14 @@ const styles = StyleSheet.create({
   headerContainer: {
     marginBottom: 24,
     paddingHorizontal: 4,
+  },
+  headerTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+  },
+  infoButton: {
+    padding: 4,
   },
   content: {
     flex: 1,
